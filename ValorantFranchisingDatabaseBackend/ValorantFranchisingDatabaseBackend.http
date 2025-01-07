@@ -1,0 +1,6 @@
+@ValorantFranchisingDatabaseBackend_HostAddress = http://localhost:5128
+
+GET {{ValorantFranchisingDatabaseBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
