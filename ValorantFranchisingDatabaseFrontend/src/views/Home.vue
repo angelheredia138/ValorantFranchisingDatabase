@@ -59,7 +59,7 @@ export default {
 /* Import the Valorant font */
 @font-face {
   font-family: "ValorantFont";
-  src: url("assets/Valorant Font.ttf") format("truetype");
+  src: url("/Valorant Font.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }

@@ -9,6 +9,16 @@ builder.Services.AddHttpClient<ValorantApiService>(client =>
     client.BaseAddress = new Uri("https://vlr-franchising-api-eze5a7bxc3ehh4ga.canadacentral-01.azurewebsites.net/api/");
 });
 builder.Services.AddScoped<ValorantApiService>();
+// Enable CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
@@ -19,6 +29,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 app.MapControllers();
 app.Run();
 
