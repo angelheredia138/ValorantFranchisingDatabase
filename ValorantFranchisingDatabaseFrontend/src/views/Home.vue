@@ -9,15 +9,38 @@
     </p>
 
     <div class="region-icons">
-      <div
-        class="region"
-        v-for="region in regions"
-        :key="region.name"
-        @click="navigateToRegion(region.route)"
-      >
-        <img :src="region.image" :alt="region.name" class="region-icon" />
-        <p class="region-label">{{ region.name }}</p>
-      </div>
+      <router-link to="/region/americas" class="region">
+        <img
+          src="/src/assets/vct-americas-png.png"
+          alt="Americas"
+          class="region-icon"
+        />
+        <p class="region-label">AMERICAS</p>
+      </router-link>
+      <router-link to="/region/emea" class="region">
+        <img
+          src="/src/assets/vct-emea-png.png"
+          alt="EMEA"
+          class="region-icon"
+        />
+        <p class="region-label">EMEA</p>
+      </router-link>
+      <router-link to="/region/china" class="region">
+        <img
+          src="/src/assets/vct-china-png.png"
+          alt="China"
+          class="region-icon"
+        />
+        <p class="region-label">CHINA</p>
+      </router-link>
+      <router-link to="/region/pacific" class="region">
+        <img
+          src="/src/assets/vct-pacific-png.png"
+          alt="Pacific"
+          class="region-icon"
+        />
+        <p class="region-label">PACIFIC</p>
+      </router-link>
     </div>
   </div>
 </template>
