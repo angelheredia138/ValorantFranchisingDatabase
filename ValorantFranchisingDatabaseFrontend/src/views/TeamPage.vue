@@ -10,47 +10,56 @@
     <div v-if="loading" class="loading">Loading players...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
 
-    <!-- Player Cards -->
-    <div v-else class="players-container">
-      <div class="player-card" v-for="player in players" :key="player.id">
-        <!-- Player Profile Image or Placeholder -->
-        <div class="player-profile-wrapper">
-          <img
-            v-if="
-              player.profileImageUrl &&
-              !player.profileImageUrl.endsWith('sil.png')
-            "
-            :src="player.profileImageUrl"
-            :alt="player.name"
-            class="player-profile"
-          />
-          <img
-            v-else
-            :src="playerPlaceholder"
-            alt="Player silhouette"
-            class="player-silhouette"
-          />
-        </div>
+    <div class="players-container">
+      <router-link
+        v-for="player in players"
+        :key="player.id"
+        :to="{ name: 'player', params: { id: player.id } }"
+        class="player-card-link"
+      >
+        <div class="player-card">
+          <!-- Player Profile Image or Placeholder -->
+          <div class="player-profile-wrapper">
+            <img
+              v-if="
+                player.profileImageUrl &&
+                !player.profileImageUrl.endsWith('sil.png')
+              "
+              :src="player.profileImageUrl"
+              :alt="player.name"
+              class="player-profile"
+            />
+            <img
+              v-else
+              :src="playerPlaceholder"
+              alt="Player silhouette"
+              class="player-silhouette"
+            />
+          </div>
 
-        <!-- Player Name and Country -->
-        <div class="player-info">
-          <img
-            v-if="player.country"
-            :src="`https://flagcdn.com/w40/${player.country.toLowerCase()}.png`"
-            :alt="player.country"
-            class="flag-icon"
-          />
-          <h3 class="player-name">{{ player.name }}</h3>
-        </div>
+          <!-- Player Name and Country -->
+          <div class="player-info">
+            <img
+              v-if="player.country"
+              :src="`https://flagcdn.com/w40/${player.country.toLowerCase()}.png`"
+              :alt="player.country"
+              class="flag-icon"
+            />
+            <h3 class="player-name">{{ player.name }}</h3>
+          </div>
 
-        <!-- Additional Info -->
-        <p class="player-realname" v-if="player.realName">
-          Real Name: {{ player.realName }}
-        </p>
-        <p class="player-role" v-if="player.roleDescription">
-          Role: {{ player.roleDescription }}
-        </p>
-      </div>
+          <!-- Additional Info -->
+          <p class="player-realname" v-if="player.realName">
+            Real Name: {{ player.realName }}
+          </p>
+          <p class="player-role" v-if="player.roleDescription">
+            Role: {{ player.roleDescription }}
+          </p>
+          <p class="player-empty-role" v-else>
+            Role: {{ player.roleDescription }}
+          </p>
+        </div>
+      </router-link>
     </div>
   </div>
 </template>
@@ -177,6 +186,20 @@ export default {
 .player-realname {
   font-size: 0.9rem;
   color: #cccccc;
+}
+.player-empty-role {
+  font-size: 0.9rem;
+  color: #3a3a4d;
+}
+.player-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.player-card-link:hover {
+  transform: scale(1.05);
 }
 
 .loading {
