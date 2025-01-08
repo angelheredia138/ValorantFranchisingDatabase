@@ -5,7 +5,14 @@
       <span class="valorant-font">VALORANT</span> Franchising Player Database!
     </h1>
     <p class="subtitle">
-      Select which region you would like to comb through below!
+      This database compiles information about franchised players, teams, and
+      their matches across all VALORANT regions. Dive in to explore team
+      rosters, match histories, and more.
+    </p>
+    <p class="description">
+      Select a region below to start exploring! Each region showcases its teams
+      and players, offering detailed insights into the VALORANT competitive
+      scene.
     </p>
 
     <div class="region-icons">
@@ -42,39 +49,25 @@
         <p class="region-label">PACIFIC</p>
       </router-link>
     </div>
+    <p class="smaller-description">
+      note: all data is received from vlr.gg and is not associated with vlr.gg
+      nor VALORANT. all of the teams' info were received from each region's
+      respective 2025 KICKOFF tournament. if you encounter any bugs, contact the
+      developer at
+      <a
+        href="https://angel-heredia.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        his website</a
+      >.
+    </p>
   </div>
 </template>
 
 <script>
 export default {
   name: "Home",
-  data() {
-    return {
-      regions: [
-        {
-          name: "AMERICAS",
-          image: "src/assets/vct-americas-png.png",
-          route: "/americas",
-        },
-        { name: "EMEA", image: "src/assets/vct-emea-png.png", route: "/emea" },
-        {
-          name: "CHINA",
-          image: "src/assets/vct-china-png.png",
-          route: "/china",
-        },
-        {
-          name: "PACIFIC",
-          image: "src/assets/vct-pacific-png.png",
-          route: "/pacific",
-        },
-      ],
-    };
-  },
-  methods: {
-    navigateToRegion(route) {
-      this.$router.push(route);
-    },
-  },
 };
 </script>
 
@@ -101,7 +94,7 @@ export default {
 
 /* Title styling */
 .title {
-  font-size: 2.5rem;
+  font-size: 3rem;
   margin-bottom: 1rem;
   font-weight: bold;
   color: #ff4655; /* Valorant red */
@@ -115,17 +108,33 @@ export default {
 /* Apply Valorant font specifically to the word VALORANT */
 .valorant-font {
   font-family: "ValorantFont", sans-serif;
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
+  font-size: 3.5rem;
   font-weight: bold;
   color: #ff4655; /* Valorant red */
 }
 
 /* Subtitle styling */
 .subtitle {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #e0e0e0; /* Lighter gray for subtitle */
+}
+
+/* Description styling */
+.description {
   font-size: 1.2rem;
   margin-bottom: 2rem;
-  color: #e0e0e0; /* Lighter gray for subtitle */
+  color: #cccccc; /* Slightly muted text */
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.smaller-description {
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+  color: #cccccc; /* Slightly muted text */
+  max-width: 600px;
+  line-height: 1.6;
 }
 
 /* Region icons container */
@@ -133,7 +142,7 @@ export default {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 2.5rem;
 }
 
 /* Individual region styling */
@@ -146,27 +155,34 @@ export default {
 }
 
 .region:hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  transform: scale(1.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
 /* Region icon styling */
 .region-icon {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   background-color: #2c2c3c; /* Placeholder color for missing images */
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease;
+}
+
+.region-icon:hover {
+  transform: scale(1.1);
 }
 
 /* Region label styling */
 .region-label {
-  margin-top: 0.5rem;
-  font-size: 1rem;
+  margin-top: 0.75rem;
+  font-size: 1.5rem;
   color: #ffffff;
   font-weight: bold;
   font-family: "ValorantFont", sans-serif;
+  text-transform: uppercase;
 }
 </style>

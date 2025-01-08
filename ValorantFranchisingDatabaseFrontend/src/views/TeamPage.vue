@@ -4,7 +4,40 @@
       <Loading />
     </div>
     <div v-else>
-      <h1 class="team-title">Team Roster</h1>
+      <!-- Team Information Section -->
+      <div class="team-info">
+        <div class="team-header">
+          <img
+            v-if="teamCountry"
+            :src="`https://flagcdn.com/w40/${teamCountry.toLowerCase()}.png`"
+            alt="Team Country"
+            class="team-flag"
+          />
+          <h1 class="team-title">{{ teamName }}'s Roster</h1>
+        </div>
+        <div class="team-socials">
+          <a
+            v-for="social in teamSocials"
+            :key="social"
+            :href="social"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="team-social-link"
+          >
+            <font-awesome-icon
+              v-if="isTwitterLink(social)"
+              :icon="['fab', 'twitter']"
+            />
+            <font-awesome-icon v-else :icon="['fas', 'link']" />
+          </a>
+        </div>
+      </div>
+
+      <p class="subtitle">
+        Explore the current roster of players representing their respective
+        region. Select a player to view more details about their stats and
+        journey.
+      </p>
 
       <!-- Back to Home Button -->
       <router-link to="/" class="back-button">Back to Home</router-link>
@@ -63,6 +96,19 @@
           </div>
         </router-link>
       </div>
+
+      <!-- Disclaimer Section -->
+      <p class="smaller-description">
+        Note: All data is sourced from <strong>vlr.gg</strong> and is not
+        officially affiliated with VALORANT or vlr.gg. If you encounter any
+        bugs, please contact the developer through
+        <a
+          href="https://angel-heredia.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >his website</a
+        >.
+      </p>
     </div>
   </div>
 </template>
@@ -80,6 +126,9 @@ export default {
   props: ["id"], // Team ID passed from the route
   data() {
     return {
+      teamName: "",
+      teamCountry: null,
+      teamSocials: [],
       players: [],
       playerPlaceholder,
       loading: true,
@@ -87,31 +136,54 @@ export default {
     };
   },
   methods: {
-    async fetchPlayers() {
+    async fetchTeamData() {
       try {
-        this.loading = true; // Start loading
+        this.loading = true;
         const response = await axios.get(
           `http://localhost:5128/api/Valorant/players/${this.id}`
         );
-        this.players = response.data;
+
+        // Ensure response data exists
+        if (response.data.length > 0) {
+          const firstPlayer = response.data[0];
+
+          // Assign team details from the first player
+          this.teamName = firstPlayer.teamName || "Unknown Team";
+          this.teamCountry = firstPlayer.teamCountry || null;
+          this.teamSocials = firstPlayer.teamSocials || [];
+          this.players = response.data;
+        } else {
+          this.error = "No players found for this team.";
+        }
       } catch (error) {
         console.error("API Error:", error);
         this.error = "Failed to load players for the team.";
       } finally {
-        this.loading = false; // Stop loading
+        this.loading = false;
       }
     },
     goBack() {
       this.$router.back(); // Navigate back to the previous page
     },
+    isTwitterLink(link) {
+      return link.includes("twitter.com") || link.includes("x.com");
+    },
   },
   async created() {
-    await this.fetchPlayers();
+    await this.fetchTeamData();
   },
 };
 </script>
 
 <style scoped>
+/* Import Valorant font */
+@font-face {
+  font-family: "ValorantFont";
+  src: url("/Valorant Font.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 .team-page {
   text-align: center;
   padding: 2rem;
@@ -120,12 +192,41 @@ export default {
   min-height: 100vh;
 }
 
+/* Page Title Styling */
 .team-title {
   font-size: 2.5rem;
+  font-weight: bold;
   color: #ff4655;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
+.valorant-font {
+  font-family: "ValorantFont", sans-serif;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #e0e0e0;
+}
+
+/* Disclaimer Styling */
+.smaller-description {
+  font-size: 0.9rem;
+  margin-top: 2rem;
+  color: #e0e0e0;
+}
+
+.smaller-description a {
+  color: #ff4655;
+  text-decoration: none;
+}
+
+.smaller-description a:hover {
+  text-decoration: underline;
+}
+
+/* Players Container */
 .players-container {
   display: flex;
   flex-wrap: wrap;
@@ -133,19 +234,20 @@ export default {
   gap: 1.5rem;
 }
 
+/* Player Card */
 .player-card {
   background-color: #3a3a4d;
   padding: 1rem;
-  border-radius: 8px;
-  width: 220px;
+  border-radius: 12px;
+  width: 250px;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .player-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 
 .player-profile-wrapper {
@@ -178,27 +280,28 @@ export default {
 }
 
 .flag-icon {
-  width: 20px;
-  height: 15px;
+  width: 25px;
+  height: 18px;
   border-radius: 2px;
-  object-fit: cover;
 }
 
 .player-name {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: bold;
   color: #ffffff;
 }
 
 .player-role,
 .player-realname {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #cccccc;
 }
+
 .player-empty-role {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #3a3a4d;
 }
+
 .player-card-link {
   text-decoration: none;
   color: inherit;
@@ -210,27 +313,17 @@ export default {
   transform: scale(1.05);
 }
 
-.loading {
-  font-size: 1.5rem;
-  color: #ffb800;
-}
-
-.error {
-  font-size: 1.2rem;
-  color: #ff4655;
-}
-
+/* Buttons */
 .back-button {
   display: inline-block;
   margin: 1rem;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.5rem;
   border: none;
   background-color: #ff4655;
   color: #ffffff;
   font-size: 1rem;
   text-decoration: none;
-  border-radius: 5px;
-  text-align: center;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.3s ease, transform 0.2s ease;
@@ -239,5 +332,50 @@ export default {
 .back-button:hover {
   background-color: #ff6775;
   transform: scale(1.05);
+}
+
+/* Error Message */
+.error {
+  font-size: 1.2rem;
+  color: #ff4655;
+}
+.team-info {
+  margin-bottom: 2rem;
+}
+
+.team-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.team-flag {
+  width: 40px;
+  height: 30px;
+}
+
+.team-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #ff4655;
+}
+
+.team-socials {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.team-social-link {
+  font-size: 1.5rem;
+  color: #ffffff;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.team-social-link:hover {
+  color: #ff4655;
+  transform: scale(1.1);
 }
 </style>

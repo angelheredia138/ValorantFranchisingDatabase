@@ -559,6 +559,7 @@ ul li {
     #ff4655,
     #7b5cff
   ); /* Eye-catching gradient */
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   padding: 0.5rem 1rem;
