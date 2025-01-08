@@ -3,6 +3,10 @@ import "./style.css";
 import App from "./App.vue";
 import router from "./router";
 import VueLazyload from "vue-lazyload";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faTwitter, faTwitch } from "@fortawesome/free-brands-svg-icons";
+library.add(faTwitter, faTwitch);
 
 const app = createApp(App);
 app.use(VueLazyload, {
@@ -11,4 +15,5 @@ app.use(VueLazyload, {
   attempt: 1,
 });
 app.use(router);
+app.component("font-awesome-icon", FontAwesomeIcon);
 app.mount("#app");

@@ -1,148 +1,215 @@
 <template>
   <div class="player-page">
-    <button @click="goBack" class="back-button">Back</button>
+    <div v-if="loading">
+      <Loading />
+    </div>
+    <div v-else>
+      <button @click="goBack" class="back-button">Back</button>
 
-    <!-- Player Overview Section -->
-    <div class="player-overview">
-      <div class="player-image-wrapper">
-        <img
-          v-if="playerData.playerImage"
-          :src="playerData.playerImage"
-          :alt="playerData.playerRealName"
-          class="player-profile"
-        />
-        <img
-          v-else
-          src="../assets/player-placeholder.png"
-          alt="Player silhouette"
-          class="player-silhouette"
-        />
-      </div>
-      <div class="player-details">
-        <h1 class="player-username">{{ playerData.username }}</h1>
-        <p class="player-realname">{{ playerData.playerRealName }}</p>
-        <p v-if="playerData.country" class="player-country">
+      <!-- Player Overview Section -->
+      <div class="player-overview">
+        <div class="player-image-wrapper">
           <img
-            :src="`https://flagcdn.com/w40/${playerData.country.toLowerCase()}.png`"
-            :alt="playerData.country"
-            class="country-flag"
+            v-if="
+              playerData.playerImage &&
+              !playerData.playerImage.endsWith('sil.png')
+            "
+            :src="playerData.playerImage"
+            :alt="playerData.playerRealName"
+            class="player-profile"
           />
-          {{ playerData.country }}
-        </p>
-        <h2 class="current-team" v-if="playerData.currentTeam">
-          Current Team: {{ playerData.currentTeam }}
-          <div v-if="playerData.currentTeamImage" class="team-logo-wrapper">
-            <img
-              :src="playerData.currentTeamImage"
-              alt="Current Team Logo"
-              class="team-logo"
-            />
+          <img
+            v-else
+            src="../assets/player-placeholder.png"
+            alt="Player silhouette"
+            class="player-profile"
+          />
+        </div>
+        <div class="player-details">
+          <h1 class="player-username">{{ playerData.username }}</h1>
+          <p class="player-realname">{{ playerData.playerRealName }}</p>
+          <div class="player-country-social">
+            <p v-if="playerData.country" class="player-country">
+              <img
+                :src="`https://flagcdn.com/w40/${playerData.country.toLowerCase()}.png`"
+                :alt="playerData.country"
+                class="country-flag"
+              />
+            </p>
+            <div class="social-media-links">
+              <a
+                v-for="handle in getSocialMediaLinks(
+                  playerData.socialMediaHandles
+                )"
+                :key="handle.platform"
+                :href="handle.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="social-media-link"
+              >
+                <font-awesome-icon
+                  :icon="[handle.iconPrefix, handle.iconName]"
+                />
+              </a>
+            </div>
           </div>
-        </h2>
+          <div v-if="playerData.currentTeam" class="current-team">
+            <div class="team-logo-wrapper">
+              <img
+                v-if="playerData.currentTeamImage"
+                :src="playerData.currentTeamImage"
+                alt="Current Team Logo"
+                class="team-logo"
+              />
+            </div>
+            <span>Current Team: {{ playerData.currentTeam }}</span>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- Social Media Section -->
-    <div
-      class="details-card"
-      v-if="
-        playerData.socialMediaHandles && playerData.socialMediaHandles.length
-      "
-    >
-      <h3>Social Media</h3>
-      <ul class="horizontal-list">
-        <li
-          v-for="(handle, index) in playerData.socialMediaHandles"
-          :key="index"
-        >
-          <a :href="handle" target="_blank" rel="noopener noreferrer">{{
-            handle
-          }}</a>
-        </li>
-      </ul>
-    </div>
+      <!-- Past Teams Section -->
+      <div
+        class="details-card"
+        v-if="playerData.pastTeams && playerData.pastTeams.length"
+      >
+        <h3>Past Teams</h3>
+        <div class="teams-container">
+          <div
+            class="team-card"
+            v-for="(team, index) in playerData.pastTeams"
+            :key="index"
+          >
+            <div class="team-logo-wrapper">
+              <img
+                v-if="
+                  playerData.pastTeamImages[index] &&
+                  !playerData.pastTeamImages[index].endsWith('vlr.png')
+                "
+                :src="playerData.pastTeamImages[index]"
+                alt="Past Team Logo"
+                class="past-teams-logo"
+              />
+              <p v-else class="team-name-placeholder"></p>
+            </div>
+            <div class="team-details">
+              <p class="team-name">{{ team }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <!-- Past Teams Section -->
-    <div
-      class="details-card"
-      v-if="playerData.pastTeams && playerData.pastTeams.length"
-    >
-      <h3>Past Teams</h3>
-      <ul class="horizontal-list">
-        <li v-for="(team, index) in playerData.pastTeams" :key="index">
-          <img
-            v-if="playerData.pastTeamImages[index]"
-            :src="playerData.pastTeamImages[index]"
-            alt="Past Team Logo"
-            class="team-logo"
-          />
-          {{ team }}
-        </li>
-      </ul>
-    </div>
+      <!-- Last Matches Section -->
+      <div
+        class="details-card"
+        v-if="playerData.lastMatches && playerData.lastMatches.length"
+      >
+        <h3>Last Matches</h3>
+        <div class="matches-container">
+          <div
+            class="match-card"
+            v-for="(match, index) in playerData.lastMatches"
+            :key="index"
+          >
+            <div class="match-team">
+              <img
+                v-if="match.teamImage"
+                :src="match.teamImage"
+                alt="Team Image"
+                class="team-logo"
+              />
+              <p class="team-name">{{ decodeHtmlEntities(match.teamName) }}</p>
+            </div>
+            <p class="vs-text">vs</p>
+            <div class="match-opponent">
+              <img
+                v-if="match.opponentImage"
+                :src="match.opponentImage"
+                alt="Opponent Image"
+                class="team-logo"
+              />
+              <p class="team-name">{{ decodeHtmlEntities(match.opponent) }}</p>
+            </div>
+            <div class="match-details">
+              <p class="event-name">
+                {{ decodeHtmlEntities(match.eventName) }}
+              </p>
+              <p class="match-result">
+                <strong>Result:</strong> {{ decodeHtmlEntities(match.result) }}
+              </p>
+              <p class="match-date">
+                <strong>Date:</strong> {{ match.date.trim() }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <!-- Last Matches Section -->
-    <div
-      class="details-card"
-      v-if="playerData.lastMatches && playerData.lastMatches.length"
-    >
-      <h3>Last Matches</h3>
-      <ul class="horizontal-list">
-        <li v-for="(match, index) in playerData.lastMatches" :key="index">
-          <img
-            v-if="match.teamImage"
-            :src="match.teamImage"
-            alt="Team Image"
-            class="match-logo"
-          />
-          vs
-          <img
-            v-if="match.opponentImage"
-            :src="match.opponentImage"
-            alt="Opponent Image"
-            class="match-logo"
-          />
-          {{ match.eventName }} - {{ match.result }} ({{ match.date.trim() }})
-        </li>
-      </ul>
-    </div>
+      <!-- Top Agents Section -->
+      <div
+        class="details-card"
+        v-if="playerData.topAgents && playerData.topAgents.length"
+      >
+        <h3>Top Agents (last 90 days)</h3>
+        <div class="agents-container">
+          <div
+            class="agent-card"
+            v-for="(agent, index) in playerData.topAgents"
+            :key="index"
+          >
+            <div class="agent-info">
+              <img
+                v-if="agent.agentImage"
+                :src="agent.agentImage"
+                alt="Agent Image"
+                class="agent-image"
+              />
+              <div class="agent-details">
+                <p>
+                  <strong>{{ agent.agentName }}</strong>
+                </p>
+              </div>
+            </div>
+            <div class="agent-stats">
+              <p>
+                <strong>Rounds Played:</strong> {{ agent.roundsPlayed }} |
+                <strong>Rating:</strong> {{ agent.rating }} |
+                <strong>ACS:</strong> {{ agent.acs }} | <strong>KD:</strong>
+                {{ agent.kd }} | <strong>ADR:</strong> {{ agent.adr }} |
+                <strong>KAST:</strong> {{ agent.kast }} | <strong>KPR:</strong>
+                {{ agent.kpr }} | <strong>APR:</strong> {{ agent.apr }} |
+                <strong>FKPR:</strong> {{ agent.fkpr }} | <strong>FDPR:</strong>
+                {{ agent.fdpr }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <!-- Agent Info Section -->
-    <div
-      class="details-card"
-      v-if="playerData.topAgents && playerData.topAgents.length"
-    >
-      <h3>Top Agents</h3>
-      <ul class="horizontal-list">
-        <li v-for="(agent, index) in playerData.topAgents" :key="index">
-          <img
-            v-if="agent.agentImage"
-            :src="agent.agentImage"
-            alt="Agent Image"
-            class="agent-image"
-          />
-          <strong>{{ agent.agentName }}</strong> ({{ agent.usage }}) - ACS:
-          {{ agent.acs }}
-        </li>
-      </ul>
-    </div>
-
-    <!-- Total Winnings Section -->
-    <div class="details-card">
-      <h3>Total Winnings</h3>
-      <p>{{ playerData.totalWinnings }}</p>
+      <!-- Total Winnings Section -->
+      <div class="details-card winnings-card">
+        <h3 class="winnings-title">Total Winnings</h3>
+        <div class="winnings-amount">
+          <span>{{ playerData.totalWinnings }}</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import Loading from "@/components/Loading.vue";
 
 export default {
   name: "PlayerPage",
+  components: {
+    Loading,
+  },
   data() {
     return {
-      playerData: {}, // Initialize as an empty object to avoid errors during rendering
+      playerData: {
+        socialMediaHandles: [],
+      },
       loading: true,
       error: null,
     };
@@ -151,14 +218,45 @@ export default {
     goBack() {
       this.$router.back();
     },
+    decodeHtmlEntities(text) {
+      const textArea = document.createElement("textarea");
+      textArea.innerHTML = text;
+      return textArea.value;
+    },
+    getSocialMediaLinks(handles) {
+      const socialMediaMap = {
+        twitter: { iconPrefix: "fab", iconName: "twitter" },
+        twitch: { iconPrefix: "fab", iconName: "twitch" },
+      };
+
+      return handles
+        .filter(
+          (handle) =>
+            handle.includes("twitter.com") ||
+            handle.includes("x.com") ||
+            handle.includes("twitch.tv")
+        )
+        .map((handle) => {
+          let platform;
+          if (handle.includes("twitter.com") || handle.includes("x.com")) {
+            platform = "twitter";
+          } else if (handle.includes("twitch.tv")) {
+            platform = "twitch";
+          }
+          return {
+            platform,
+            url: handle,
+            iconPrefix: socialMediaMap[platform].iconPrefix,
+            iconName: socialMediaMap[platform].iconName,
+          };
+        });
+    },
     async fetchPlayerData(playerId) {
       try {
         const response = await axios.get(
           `http://localhost:5128/api/Valorant/player-stats/${playerId}`
         );
-        console.log(response.data);
         this.playerData = response.data;
-        console.log(this.playerData);
       } catch (error) {
         console.error("API Error:", error);
         this.error = "Failed to load player details.";
@@ -180,6 +278,7 @@ export default {
   padding: 2rem;
   font-family: Arial, sans-serif;
   color: #f4f4f4;
+  text-align: left; /* Ensures all content is left-aligned */
 }
 
 .back-button {
@@ -203,6 +302,7 @@ export default {
   display: flex;
   gap: 2rem;
   margin-bottom: 2rem;
+  align-items: center;
 }
 
 .player-image-wrapper {
@@ -212,6 +312,7 @@ export default {
 .player-profile {
   width: 150px;
   height: 150px;
+  background-color: #5d6085;
   border-radius: 50%;
 }
 
@@ -239,20 +340,81 @@ export default {
 }
 
 .current-team {
-  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  gap: 1rem;
+}
+
+.teams-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .team-logo-wrapper {
-  background: linear-gradient(45deg, #ff4655, #7b5cff);
+  background-color: #5d6085;
   padding: 5px;
   display: inline-block;
   border-radius: 8px;
 }
 
+.team-card {
+  display: flex;
+  align-items: center;
+  background-color: #5d6085;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 .team-logo {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 5px;
+  object-fit: cover;
+}
+
+.past-teams-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  object-fit: cover;
+  margin-right: 1rem;
+}
+.team-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.team-name {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ffffff;
+  text-transform: capitalize;
+}
+
+.vs-text {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ff4655;
+  margin: 0 1rem;
+}
+
+.match-details {
+  flex-grow: 1;
+  text-align: right;
+}
+.event-name {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #111823;
+}
+
+.match-result,
+.match-date {
+  font-size: 0.9rem;
+  color: #e0e0e0;
 }
 
 .details-card {
@@ -262,15 +424,40 @@ export default {
   margin-bottom: 1rem;
   text-align: left;
 }
+.matches-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.match-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #5d6085;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.match-team,
+.match-opponent {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 
 .details-card h3 {
   color: #ff4655;
 }
 
-.horizontal-list {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul li {
+  margin-bottom: 0.5rem;
 }
 
 .match-logo,
@@ -278,5 +465,103 @@ export default {
   width: 40px;
   height: 40px;
   border-radius: 5px;
+}
+.agents-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.agent-card {
+  justify-content: space-between;
+  align-items: center;
+  background-color: #5d6085;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.agent-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.agent-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.agent-details p {
+  font-size: 1rem;
+  color: #ffffff;
+  text-transform: capitalize;
+}
+
+.agent-stats {
+  text-align: right;
+  font-size: 0.9rem;
+  color: #e0e0e0;
+  flex-grow: 1;
+}
+
+.agent-stats p {
+  margin: 0.2rem 0;
+}
+.player-country-social {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.social-media-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.social-media-link {
+  color: #ffffff; /* Default icon color */
+  font-size: 1.5rem;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.social-media-link:hover {
+  color: #ff4655; /* Hover effect for icons */
+  transform: scale(1.2);
+}
+.winnings-card {
+  background-color: #5d6085; /* Same as other card sections */
+  padding: 1.5rem;
+  border-radius: 10px;
+  text-align: center; /* Center content for this section */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.winnings-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ff4655; /* Highlighted title color */
+  margin-bottom: 1rem;
+}
+
+.winnings-amount {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ffffff; /* Standout text color */
+  background: linear-gradient(
+    90deg,
+    #ff4655,
+    #7b5cff
+  ); /* Eye-catching gradient */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
 }
 </style>

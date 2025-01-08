@@ -1,65 +1,68 @@
 <template>
   <div class="team-page">
-    <h1 class="team-title">Team Roster</h1>
+    <div v-if="loading">
+      <Loading />
+    </div>
+    <div v-else>
+      <h1 class="team-title">Team Roster</h1>
 
-    <!-- Back to Home Button -->
-    <router-link to="/" class="back-button">Back to Home</router-link>
-    <button @click="goBack" class="back-button">Back</button>
+      <!-- Back to Home Button -->
+      <router-link to="/" class="back-button">Back to Home</router-link>
+      <button @click="goBack" class="back-button">Back</button>
 
-    <!-- Loading and Error Messages -->
-    <div v-if="loading" class="loading">Loading players...</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
+      <!-- Error Message -->
+      <div v-if="error" class="error">{{ error }}</div>
 
-    <div class="players-container">
-      <router-link
-        v-for="player in players"
-        :key="player.id"
-        :to="{ name: 'player', params: { id: player.id } }"
-        class="player-card-link"
-      >
-        <div class="player-card">
-          <!-- Player Profile Image or Placeholder -->
-          <div class="player-profile-wrapper">
-            <img
-              v-if="
-                player.profileImageUrl &&
-                !player.profileImageUrl.endsWith('sil.png')
-              "
-              :src="player.profileImageUrl"
-              :alt="player.name"
-              class="player-profile"
-            />
-            <img
-              v-else
-              :src="playerPlaceholder"
-              alt="Player silhouette"
-              class="player-silhouette"
-            />
+      <!-- Players Section -->
+      <div class="players-container">
+        <router-link
+          v-for="player in players"
+          :key="player.id"
+          :to="{ name: 'player', params: { id: player.id } }"
+          class="player-card-link"
+        >
+          <div class="player-card">
+            <!-- Player Profile Image or Placeholder -->
+            <div class="player-profile-wrapper">
+              <img
+                v-if="
+                  player.profileImageUrl &&
+                  !player.profileImageUrl.endsWith('sil.png')
+                "
+                :src="player.profileImageUrl"
+                :alt="player.name"
+                class="player-profile"
+              />
+              <img
+                v-else
+                :src="playerPlaceholder"
+                alt="Player silhouette"
+                class="player-silhouette"
+              />
+            </div>
+
+            <!-- Player Name and Country -->
+            <div class="player-info">
+              <img
+                v-if="player.country"
+                :src="`https://flagcdn.com/w40/${player.country.toLowerCase()}.png`"
+                :alt="player.country"
+                class="flag-icon"
+              />
+              <h3 class="player-name">{{ player.name }}</h3>
+            </div>
+
+            <!-- Additional Info -->
+            <p class="player-realname" v-if="player.realName">
+              Real Name: {{ player.realName }}
+            </p>
+            <p class="player-role" v-if="player.roleDescription">
+              Role: {{ player.roleDescription }}
+            </p>
+            <p class="player-empty-role" v-else>Role: Not Specified</p>
           </div>
-
-          <!-- Player Name and Country -->
-          <div class="player-info">
-            <img
-              v-if="player.country"
-              :src="`https://flagcdn.com/w40/${player.country.toLowerCase()}.png`"
-              :alt="player.country"
-              class="flag-icon"
-            />
-            <h3 class="player-name">{{ player.name }}</h3>
-          </div>
-
-          <!-- Additional Info -->
-          <p class="player-realname" v-if="player.realName">
-            Real Name: {{ player.realName }}
-          </p>
-          <p class="player-role" v-if="player.roleDescription">
-            Role: {{ player.roleDescription }}
-          </p>
-          <p class="player-empty-role" v-else>
-            Role: {{ player.roleDescription }}
-          </p>
-        </div>
-      </router-link>
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -67,9 +70,13 @@
 <script>
 import axios from "axios";
 import playerPlaceholder from "../assets/player-placeholder.png";
+import Loading from "@/components/Loading.vue";
 
 export default {
   name: "TeamPage",
+  components: {
+    Loading,
+  },
   props: ["id"], // Team ID passed from the route
   data() {
     return {
@@ -82,14 +89,16 @@ export default {
   methods: {
     async fetchPlayers() {
       try {
+        this.loading = true; // Start loading
         const response = await axios.get(
           `http://localhost:5128/api/Valorant/players/${this.id}`
         );
         this.players = response.data;
       } catch (error) {
+        console.error("API Error:", error);
         this.error = "Failed to load players for the team.";
       } finally {
-        this.loading = false;
+        this.loading = false; // Stop loading
       }
     },
     goBack() {
@@ -97,7 +106,6 @@ export default {
     },
   },
   async created() {
-    this.loading = true;
     await this.fetchPlayers();
   },
 };
@@ -145,11 +153,11 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 120px; /* Slightly larger container for better centering */
+  width: 120px;
   height: 120px;
   border-radius: 50%;
-  background-color: #444;
-  margin: 0 auto 1rem; /* Center horizontally and add bottom margin */
+  background-color: #5d6085;
+  margin: 0 auto 1rem;
 }
 
 .player-profile,
@@ -158,7 +166,7 @@ export default {
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  display: block; /* Ensures proper centering inside the container */
+  display: block;
 }
 
 .player-info {

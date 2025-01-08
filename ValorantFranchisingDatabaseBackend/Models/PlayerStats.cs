@@ -12,6 +12,6 @@ public class PlayerStats
     public List<string> SocialMediaHandles { get; set; } = new();
     public List<MatchResult> LastMatches { get; set; } = new();
     public List<AgentStats> TopAgents { get; set; } = new();
-    public string? Username { get; internal set; }
+    public string? Username { get; set; }
 
 }

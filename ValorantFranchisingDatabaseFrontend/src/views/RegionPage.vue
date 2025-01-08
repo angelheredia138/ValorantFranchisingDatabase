@@ -1,43 +1,52 @@
 <template>
   <div class="region-page">
-    <!-- Header Section -->
-    <div class="header">
-      <img :src="regionLogo" :alt="regionName" class="header-logo" />
-      <h1 class="header-title valorant-font">
-        VCT {{ regionName.toUpperCase() }}
-      </h1>
+    <div v-if="loading">
+      <Loading />
     </div>
+    <div v-else>
+      <!-- Header Section -->
+      <div class="header">
+        <img :src="regionLogo" :alt="regionName" class="header-logo" />
+        <h1 class="header-title valorant-font">
+          VCT {{ regionName.toUpperCase() }}
+        </h1>
+      </div>
 
-    <!-- Back to Home Button -->
-    <router-link to="/" class="back-button">Back to Home</router-link>
+      <!-- Back to Home Button -->
+      <router-link to="/" class="back-button">Back to Home</router-link>
 
-    <!-- Subtitle Section -->
-    <p class="subtitle">Welcome to the VCT {{ regionName }} region page!</p>
+      <!-- Subtitle Section -->
+      <p class="subtitle">Welcome to the VCT {{ regionName }} region page!</p>
 
-    <!-- Teams Section -->
-    <div v-if="loading" class="loading">Loading teams...</div>
-    <div v-else-if="error" class="error">{{ error }}</div>
-    <div v-else class="teams-container">
-      <router-link
-        v-for="team in teams"
-        :key="team.id"
-        :to="`/team/${team.id}`"
-        class="team-card-link"
-      >
-        <div class="team-card">
-          <img :src="team.logoUrl" :alt="team.name" class="team-logo" />
-          <h2 class="team-name">{{ team.name }}</h2>
-        </div>
-      </router-link>
+      <!-- Teams Section -->
+      <div v-if="error" class="error">{{ error }}</div>
+      <div v-else class="teams-container">
+        <router-link
+          v-for="team in teams"
+          :key="team.id"
+          :to="`/team/${team.id}`"
+          class="team-card-link"
+        >
+          <div class="team-card">
+            <img :src="team.logoUrl" :alt="team.name" class="team-logo" />
+            <h2 class="team-name">{{ team.name }}</h2>
+          </div>
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
+
 <script>
 import axios from "axios";
+import Loading from "@/components/Loading.vue";
 
 export default {
   name: "RegionPage",
-  props: ["region"], // Pass the region dynamically via the route
+  components: {
+    Loading,
+  },
+  props: ["region"],
   data() {
     return {
       teams: [],
@@ -48,7 +57,7 @@ export default {
     };
   },
   watch: {
-    region: "fetchData", // Re-fetch data if the region changes
+    region: "fetchData",
   },
   async created() {
     await this.initializeRegion();
@@ -56,7 +65,6 @@ export default {
   },
   methods: {
     async initializeRegion() {
-      // Map region to its name and logo
       const regionMap = {
         americas: {
           name: "Americas",
