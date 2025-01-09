@@ -286,7 +286,7 @@ export default {
     async fetchPlayerData(playerId) {
       try {
         const response = await axios.get(
-          `http://localhost:5128/api/Valorant/player-stats/${playerId}`
+          `https://vlr-franchising-database-backend-a5cgguczc6fna4hj.canadacentral-01.azurewebsites.net/api/Valorant/player-stats/${playerId}`
         );
         this.playerData = response.data;
       } catch (error) {

@@ -168,7 +168,7 @@ export default {
       try {
         this.loading = true;
         const response = await axios.get(
-          `http://localhost:5128/api/Valorant/players/${this.id}`
+          `https://vlr-franchising-database-backend-a5cgguczc6fna4hj.canadacentral-01.azurewebsites.net/api/Valorant/players/${this.id}`
         );
 
         // Ensure response data exists

@@ -30,6 +30,9 @@
 
       <!-- Header Section -->
       <div class="header">
+        <div class="back-button-container">
+          <button @click="goBack" class="back-button">Back to Home</button>
+        </div>
         <img :src="regionLogo" :alt="regionName" class="header-logo" />
         <h1 class="header-title valorant-font">
           VCT {{ regionName.toUpperCase() }}
@@ -92,6 +95,9 @@ export default {
     },
   },
   methods: {
+    goBack() {
+      this.$router.back();
+    },
     setRegionData() {
       const regionMap = {
         americas: {
@@ -127,7 +133,7 @@ export default {
       try {
         this.loading = true;
         const response = await axios.get(
-          `http://localhost:5128/api/Valorant/teams/${this.$route.params.region}`
+          `https://vlr-franchising-database-backend-a5cgguczc6fna4hj.canadacentral-01.azurewebsites.net/api/Valorant/teams/${this.$route.params.region}`
         );
         this.teams = response.data;
       } catch (err) {
