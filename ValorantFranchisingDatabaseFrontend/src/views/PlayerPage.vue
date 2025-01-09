@@ -4,7 +4,33 @@
       <Loading />
     </div>
     <div v-else>
-      <button @click="goBack" class="back-button">Back</button>
+      <!-- Navigation Dropdown -->
+      <div class="dropdown-container">
+        <button @click="toggleDropdown" class="dropdown-button">
+          Navigate Regions <span :class="dropdownIconClass">▼</span>
+        </button>
+        <transition name="dropdown">
+          <div v-if="dropdownVisible" class="dropdown-menu">
+            <router-link to="/" class="dropdown-item">Home</router-link>
+            <router-link to="/region/americas" class="dropdown-item"
+              >Americas</router-link
+            >
+            <router-link to="/region/emea" class="dropdown-item"
+              >EMEA</router-link
+            >
+            <router-link to="/region/china" class="dropdown-item"
+              >China</router-link
+            >
+            <router-link to="/region/pacific" class="dropdown-item"
+              >Pacific</router-link
+            >
+          </div>
+        </transition>
+      </div>
+
+      <div class="back-button-container">
+        <button @click="goBack" class="back-button">Back to Team Roster</button>
+      </div>
 
       <!-- Player Overview Section -->
       <div class="player-overview">
@@ -212,7 +238,13 @@ export default {
       },
       loading: true,
       error: null,
+      dropdownVisible: false,
     };
+  },
+  computed: {
+    dropdownIconClass() {
+      return this.dropdownVisible ? "icon-flipped" : "icon-default";
+    },
   },
   methods: {
     goBack() {
@@ -264,6 +296,9 @@ export default {
         this.loading = false;
       }
     },
+    toggleDropdown() {
+      this.dropdownVisible = !this.dropdownVisible;
+    },
   },
   async created() {
     const playerId = this.$route.params.id;
@@ -283,6 +318,26 @@ export default {
 
 .back-button {
   margin-bottom: 2rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: #ff4655;
+  color: #ffffff;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #ff6775;
+  transform: scale(1.05);
+}
+.back-button-container {
+  text-align: center; /* Center the button horizontally */
+  margin-bottom: 2rem; /* Add space below the button */
+}
+
+.back-button {
   padding: 0.5rem 1rem;
   border: none;
   background-color: #ff4655;
@@ -564,5 +619,97 @@ ul li {
   -webkit-text-fill-color: transparent;
   padding: 0.5rem 1rem;
   border-radius: 8px;
+}
+
+.dropdown-container {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1000;
+  width: fit-content;
+  background-color: transparent;
+}
+
+.dropdown-button {
+  background-color: #ff4655;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dropdown-button:hover {
+  background-color: #ff6775;
+  transform: scale(1.05);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  background-color: #3a3a4d;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  width: 200px;
+  text-align: left;
+  animation: dropdown-animation 0.3s ease-out;
+}
+
+@keyframes dropdown-animation {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  display: block;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: #ffffff;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #4a4a5e;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.dropdown-enter-to,
+.dropdown-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+.icon-default {
+  display: inline-block;
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+.icon-flipped {
+  display: inline-block;
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
 }
 </style>

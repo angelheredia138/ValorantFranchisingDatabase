@@ -8,16 +8,24 @@
 <script>
 export default {
   name: "Loading",
+  mounted() {
+    // Add class to disable scrolling when this page is mounted
+    document.body.classList.add("disable-scroll");
+  },
+  unmounted() {
+    // Remove class to re-enable scrolling when leaving this page
+    document.body.classList.remove("disable-scroll");
+  },
 };
 </script>
 
 <style scoped>
 .loading-container {
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  height: 100vh;
+  align-items: center;
   color: #ffffff;
 }
 
