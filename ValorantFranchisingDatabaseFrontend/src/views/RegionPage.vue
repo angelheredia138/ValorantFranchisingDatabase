@@ -65,11 +65,19 @@
 import axios from "axios";
 import Loading from "@/components/Loading.vue";
 
+// Import assets for each region
+import vctAmericas from "@/assets/vct-americas-png.png";
+import vctEmea from "@/assets/vct-emea-png.png";
+import vctChina from "@/assets/vct-china-png.png";
+import vctPacific from "@/assets/vct-pacific-png.png";
+
 export default {
   name: "RegionPage",
+
   components: {
     Loading,
   },
+
   data() {
     return {
       teams: [],
@@ -99,22 +107,23 @@ export default {
       this.$router.back();
     },
     setRegionData() {
+      // Here we use the imported assets instead of hard-coded paths
       const regionMap = {
         americas: {
           name: "Americas",
-          logo: "/src/assets/vct-americas-png.png",
+          logo: vctAmericas,
         },
         emea: {
           name: "EMEA",
-          logo: "/src/assets/vct-emea-png.png",
+          logo: vctEmea,
         },
         china: {
           name: "China",
-          logo: "/src/assets/vct-china-png.png",
+          logo: vctChina,
         },
         pacific: {
           name: "Pacific",
-          logo: "/src/assets/vct-pacific-png.png",
+          logo: vctPacific,
         },
       };
 
@@ -266,6 +275,7 @@ export default {
   font-family: "ValorantFont", sans-serif;
   font-weight: bold;
 }
+
 .back-button {
   display: inline-block;
   margin-bottom: 2rem;
@@ -351,6 +361,7 @@ export default {
 .dropdown-item:last-child {
   border-bottom: none;
 }
+
 .dropdown-enter-active,
 .dropdown-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -367,6 +378,7 @@ export default {
   opacity: 1;
   transform: translateY(0);
 }
+
 .icon-default {
   display: inline-block;
   transform: rotate(0deg);
@@ -377,5 +389,58 @@ export default {
   display: inline-block;
   transform: rotate(180deg);
   transition: transform 0.3s ease;
+}
+/* Mobile-Specific Adjustments */
+@media (max-width: 768px) {
+  .header-logo {
+    width: 100px;
+    margin-bottom: 0rem;
+  }
+  .header-title {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.75rem;
+  }
+
+  .team-name {
+    font-size: 0.7rem;
+  }
+
+  .back-button {
+    font-size: 0.6rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .dropdown-button {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .dropdown-item {
+    font-size: 0.9rem;
+  }
+
+  /* Adjust team cards for smaller screens */
+  .teams-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two cards per row */
+    gap: 1rem; /* Smaller gap for mobile */
+    justify-items: center; /* Center cards horizontally */
+  }
+
+  .team-card {
+    width: 75px; /* Shrink width of team cards */
+    padding: 0.5rem; /* Reduce padding */
+  }
+  .team-card:hover {
+    transform: scale(0.96);
+  }
+
+  .team-logo {
+    width: 50px; /* Shrink logo */
+    height: 50px;
+  }
 }
 </style>

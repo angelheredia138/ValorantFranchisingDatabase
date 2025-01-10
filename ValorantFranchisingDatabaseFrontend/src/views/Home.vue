@@ -40,39 +40,27 @@
 
     <div class="region-icons">
       <router-link to="/region/americas" class="region">
-        <img
-          src="/src/assets/vct-americas-png.png"
-          alt="Americas"
-          class="region-icon"
-        />
+        <img :src="vctAmericas" alt="Americas" class="region-icon" />
         <p class="region-label">AMERICAS</p>
       </router-link>
+
       <router-link to="/region/emea" class="region">
-        <img
-          src="/src/assets/vct-emea-png.png"
-          alt="EMEA"
-          class="region-icon"
-        />
+        <img :src="vctEmea" alt="EMEA" class="region-icon" />
         <p class="region-label">EMEA</p>
       </router-link>
+
       <router-link to="/region/china" class="region">
-        <img
-          src="/src/assets/vct-china-png.png"
-          alt="China"
-          class="region-icon"
-        />
+        <img :src="vctChina" alt="China" class="region-icon" />
         <p class="region-label">CHINA</p>
       </router-link>
+
       <router-link to="/region/pacific" class="region">
-        <img
-          src="/src/assets/vct-pacific-png.png"
-          alt="Pacific"
-          class="region-icon"
-        />
+        <img :src="vctPacific" alt="Pacific" class="region-icon" />
         <p class="region-label">PACIFIC</p>
       </router-link>
     </div>
-    <p class="smaller-description">
+
+    <p class="smallest-description">
       note: all data is received from vlr.gg and is not associated with vlr.gg
       nor VALORANT. all of the teams' info were received from each region's
       respective 2025 KICKOFF tournament. if you encounter any bugs, contact the
@@ -89,6 +77,11 @@
 </template>
 
 <script>
+import vctAmericas from "@/assets/vct-americas-png.png";
+import vctEmea from "@/assets/vct-emea-png.png";
+import vctChina from "@/assets/vct-china-png.png";
+import vctPacific from "@/assets/vct-pacific-png.png";
+
 export default {
   name: "Home",
   mounted() {
@@ -102,6 +95,11 @@ export default {
   data() {
     return {
       dropdownVisible: false,
+      // Image references imported above
+      vctAmericas,
+      vctEmea,
+      vctChina,
+      vctPacific,
     };
   },
   computed: {
@@ -118,10 +116,9 @@ export default {
 </script>
 
 <style scoped>
-/* Import the Valorant font */
 @font-face {
   font-family: "ValorantFont";
-  src: url("/Valorant Font.ttf") format("truetype");
+  src: url("@/assets/Valorant Font.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -174,7 +171,7 @@ export default {
   max-width: 600px;
   line-height: 1.6;
 }
-
+.smallest-description,
 .smaller-description {
   font-size: 0.9rem;
   margin-bottom: 2rem;
@@ -232,6 +229,7 @@ export default {
   text-transform: uppercase;
 }
 
+/* Dropdown Container */
 .dropdown-container {
   position: fixed;
   top: 1rem;
@@ -296,6 +294,7 @@ export default {
 .dropdown-item:last-child {
   border-bottom: none;
 }
+
 .dropdown-enter-active,
 .dropdown-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -312,6 +311,7 @@ export default {
   opacity: 1;
   transform: translateY(0);
 }
+
 .icon-default {
   display: inline-block;
   transform: rotate(0deg);
@@ -322,5 +322,64 @@ export default {
   display: inline-block;
   transform: rotate(180deg);
   transition: transform 0.3s ease;
+}
+/* Media Query for Mobile Screens */
+@media (max-width: 768px) {
+  /* Container styling */
+  .home-container {
+    padding: 0rem;
+  }
+  /* Make all text smaller */
+  .title {
+    font-size: 1.25rem;
+  }
+  .valorant-font {
+    font-size: 1.25rem;
+  }
+  .subtitle {
+    font-size: 0.75rem;
+    margin-bottom: 0rem;
+  }
+
+  .description,
+  .smaller-description {
+    font-size: 0.65rem;
+    margin-bottom: 0rem;
+  }
+  .smallest-description {
+    font-size: 0.6rem;
+    margin-bottom: 0rem;
+  }
+  .region-label {
+    font-size: 1rem;
+  }
+
+  .dropdown-button {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .dropdown-item {
+    font-size: 0.9rem;
+  }
+
+  /* Adjust region buttons to a 2x2 grid */
+  .region-icons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0rem;
+    justify-items: center; /* Center icons horizontally */
+    align-items: center; /* Center icons vertically */
+  }
+
+  /* Make region buttons smaller */
+  .region {
+    transform: scale(0.8);
+  }
+
+  .region-icon {
+    width: 75px;
+    height: 75px;
+  }
 }
 </style>
